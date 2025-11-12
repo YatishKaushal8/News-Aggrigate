@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>It news aggregate </title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>📰 IT News Aggregate</title>
+<style>
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    margin: 0;
+    background: linear-gradient(135deg, #4b6cb7, #182848);
+    color: white;
+  }
+  header {
+    text-align: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+  }
+  header h1 {
+    margin: 5px 0;
+  }
+  .subtitle {
+    font-size: 14px;
+    color: #b3c6ff;
+  }
+  main {
+    text-align: center;
+    padding: 20px;
+  }
+  select {
+    padding: 10px;
+    margin: 8px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-weight: bold;
+  }
+  select option {
+    color: black;
+  }
+  button {
+    padding: 10px 15px;
+    background: #0066ff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  button:hover {
+    background: #0047b3;
+  }
+  #news-container {
+    max-width: 900px;
+    margin: 25px auto;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: left;
+  }
+  .news-item {
+    background: rgba(255, 255, 255, 0.15);
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 10px;
+  }
+  .news-item h3 {
+    margin: 0;
+    color: #fff;
+  }
+  .news-item a {
+    color: #a5c9ff;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  .news-item a:hover {
+    text-decoration: underline;
+  }
+  .source {
+    color: #d9e1ff;
+    font-size: 13px;
+  }
+  footer {
+    text-align: center;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #cdd8ff;
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>📰 IT News Aggregate</h1>
+  <p class="subtitle">Local 🇮🇳 | Global 🌍 | Dynamic News Feed</p>
+</header>
+
+<main>
+  <div>
+    <label>🌍 Country:</label>
+    <select id="country">
+      <option value="in">India 🇮🇳</option>
+      <option value="us">World 🌍</option>
+    </select>
+
+    <label>🏙️ City (India only):</label>
+    <select id="city">
+      <option value="">All Cities</option>
+      <option value="delhi">Delhi</option>
+      <option value="mumbai">Mumbai</option>
+      <option value="bangalore">Bangalore</option>
+      <option value="chennai">Chennai</option>
+      <option value="kolkata">Kolkata</option>
+      <option value="hyderabad">Hyderabad</option>
+    </select>
+
+    <label>📁 Category:</label>
+    <select id="category">
+      <option value="top">Top Headlines</option>
+      <option value="technology">Technology</option>
+    </select>
+
+    <button id="fetchBtn">Get News</button>
+  </div>
+
+  <div id="news-container">
+    <p><b>Loading news...</b></p>
+  </div>
+</main>
+
+<footer>© 2025 IT News</footer>
+
+<script>
+  const apiKey = "pub_7ac51e66352d419d846c91f9d0a24701";
+  const newsContainer = document.getElementById("news-container");
+  const countrySelect = document.getElementById("country");
+  const categorySelect = document.getElementById("category");
+  const citySelect = document.getElementById("city");
+  const fetchBtn = document.getElementById("fetchBtn");
+
+  async function fetchNews() {
+    const country = countrySelect.value;
+    const category = categorySelect.value;
+    const city = citySelect.value;
+
+    newsContainer.innerHTML = "<p><b>Loading news...</b></p>";
+
+    let categoryParam = category === "top" ? "" : `&category=${category}`;
+    let queryParam = city ? `&q=${city}` : "";
+    let baseUrl = `https://newsdata.io/api/1/news?apikey=${apiKey}&country=${country}&language=en${categoryParam}${queryParam}`;
+
+    try {
+      const res1 = await fetch(baseUrl);
+      const data1 = await res1.json();
+      let articles = data1.results || [];
+
+      if (data1.nextPage) {
+        const res2 = await fetch(`${baseUrl}&page=${data1.nextPage}`);
+        const data2 = await res2.json();
+        if (data2.results) articles = articles.concat(data2.results);
+      }
+
+      articles = articles.slice(0, 20);
+
+      if (articles.length === 0) {
+        newsContainer.innerHTML = "<p>No news found for this selection.</p>";
+        return;
+      }
+
+      newsContainer.innerHTML = "";
+      articles.forEach(article => {
+        const div = document.createElement("div");
+        div.className = "news-item";
+        div.innerHTML = `
+          <h3>${article.title}</h3>
+          <p class="source"><strong>Source:</strong> ${article.source_id || "Unknown"}</p>
+          <a href="${article.link}" target="_blank">🔗 View Full Article</a>
+        `;
+        newsContainer.appendChild(div);
+      });
+    } catch (error) {
+      console.error(error);
+      newsContainer.innerHTML = "<p>❌ Failed to fetch news. Try again later.</p>";
+    }
+  }
+
+  fetchBtn.addEventListener("click", fetchNews);
+  window.onload = fetchNews;
+</script>
+</body>
+</html>
+    
+  </body>
+  
+</html>
